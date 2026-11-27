@@ -1,4 +1,4 @@
-# Private threat feed: offensive AI agents
+# Offensive AI agent IOC feed
 
 Daily mirror of the [offensive.agency](https://www.offensive.agency/api) feeds: IPs and domains of offensive AI agent consoles exposed on the Internet.
 
@@ -20,35 +20,22 @@ Git history is the full IOC history: `git log -p feeds/ips.txt`.
 
 A listed IP is an exposed agent console. That says nothing about who runs it or why. Treat it as a hunting and enrichment lead, not grounds to block on its own.
 
-## Read-only access from another machine
+## Usage
 
-Use a deploy key, which only works on this one repo:
-
-```bash
-ssh-keygen -t ed25519 -f ~/.ssh/threatfeed_ro -N "" -C "threatfeed read-only"
-```
-
-Then go to repo **Settings → Deploy keys → Add deploy key** and paste the `.pub` file. Leave **Allow write access unchecked**.
-
-`~/.ssh/config` (port 443 gets through most corporate firewalls):
-
-```
-Host github-threatfeed
-  HostName ssh.github.com
-  Port 443
-  User git
-  IdentityFile ~/.ssh/threatfeed_ro
-  IdentitiesOnly yes
-```
+The feeds update daily at about 10:30 UTC. No auth is needed:
 
 ```bash
-git clone git@github-threatfeed:OWNER/REPO.git
-git pull   # daily
+curl -fsSL https://raw.githubusercontent.com/jonathanhsong/AOF_IOCs/main/feeds/ips.txt
+curl -fsSL https://raw.githubusercontent.com/jonathanhsong/AOF_IOCs/main/feeds/domains.txt
+curl -fsSL https://raw.githubusercontent.com/jonathanhsong/AOF_IOCs/main/feeds/stix.json
+curl -fsSL https://raw.githubusercontent.com/jonathanhsong/AOF_IOCs/main/feeds/misp.json
+curl -fsSL https://raw.githubusercontent.com/jonathanhsong/AOF_IOCs/main/feeds/suricata.rules
 ```
 
-If you need HTTPS or tooling without a clone, use a fine-grained PAT instead. Set it to **Only select repositories → this repo**, with **Contents: Read-only** and an expiry date:
+Or clone it and pull daily:
 
 ```bash
-curl -fsSL -H "Authorization: Bearer $PAT" \
-  https://raw.githubusercontent.com/OWNER/REPO/main/feeds/ips.txt
+git clone https://github.com/jonathanhsong/AOF_IOCs.git
 ```
+
+The upstream source is the [offensive.agency API](https://www.offensive.agency/api). This repo adds daily snapshots, git history and change deltas.
